@@ -3,7 +3,7 @@ from django.shortcuts import render
 
 
 # Create your views here.
-def home(request):
+def User(request):
     return JsonResponse({
         "message": "welcome to megamind"
     })

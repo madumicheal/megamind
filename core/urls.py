@@ -16,11 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.urls import include
+from rest_framework.authtoken import views
 
-from account.views import home
+from account.views import User
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', home),
-    path('', include('account.urls')),
+    path('api/account', include('account.api.urls', 'account.api')),
 ]

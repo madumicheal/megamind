@@ -1,30 +1,33 @@
-import self
 from rest_framework import serializers
 
-from account.models import User
+from django.contrib.auth import get_user_model
 
+User = get_user_model()
+
+#Registration serializer
 class RegistrationSerializer(serializers.ModelSerializer):
 
     confirm_password = serializers.CharField(style={'input_type': 'password'}, write_only=True)
 
     class Meta:
         model = User
-        fields = ['email', 'username', 'password', 'confirm_password']
+        fields = ['username', 'password', 'confirm_password', 'email']
         extra_kwargs = {
             'password': {'write_only': True}
         }
 
     def create(self, validated_data):
-        user = User.objects.create(**validated_data)
-        user.set_password(validated_data['password'])
+        password = validated_data.pop('password')
+        confirm_password = validated_data.pop('confirm_password')
+        if password != confirm_password:
+            raise serializers.ValidationError({'password': 'Passwords must match.'})
+        user = User(**validated_data)
+        user.set_password(password)
         user.save()
         return user
 
-        if password != confirm_password:
-            raise serializers.ValidationError({'password': 'Passwords must match.'})
-        User.set_password(password)
-        User.save()
+class UserSerializer(serializers.ModelSerializer):
 
-
-
-
+    class Meta:
+        model = get_user_model()
+        exclude = ["password"]
